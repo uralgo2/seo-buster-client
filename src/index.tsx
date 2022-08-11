@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+
+import './styles/bootstrap.min.css';
+import './styles/font-awesome.min.css';
+import './styles/style.css';
+import './styles/mystyle.css'
+
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 

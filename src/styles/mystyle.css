@@ -1,0 +1,372 @@
+.tasks tr {
+    cursor: pointer;
+}
+.tasks tr:hover td {
+     background: #EDEDED;
+}
+#upload_link{
+    text-decoration:none;
+}
+
+b, strong {
+    font-weight: 600;
+}
+
+#file_input_id{
+    display:none;
+}
+#file_input_id2{
+    display:none;
+}
+
+.site-delete:hover {
+    color: red;
+}
+
+#calc_form{
+    display: flex;
+    gap: 12px;
+    align-content: center;
+    align-items: center;
+}
+#calc_form .btn-primary{
+    min-width: 180px;
+}
+.pars{
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 10px;
+}
+.pars .form-group{
+    display: flex;
+    gap: 6px;
+    width: calc((100%/3) - 20px );
+}
+.pars input{
+    width: 200px;
+}
+.pars label {
+    margin-bottom: 0;
+    line-height: 18px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.calc-top th div {
+    width: 90px;
+    height: 50px;
+    color: white;
+    background-color: #18b2f4;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 !important;
+    font-weight: lighter !important;
+    box-shadow: 5px 5px 6px rgba(0, 0, 0, 0.1);
+    vertical-align: middle;
+    display: table-cell;
+    font-size: 16px;
+}
+
+.calc-down td div {
+    width: 90px;
+    height: 30px;
+    color: black;
+    background-color: white;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 !important;
+    font-weight: lighter !important;
+    box-shadow: 5px 5px 6px rgba(0, 0, 0, 0.1);
+    vertical-align: middle;
+    display: table-cell;
+    font-size: 10px;
+}
+
+.frequencyInput {
+    text-align: center;
+    font-weight: bold;
+    height: 43px;
+    width: 207px;
+    border-radius: 4px;
+    border-color: #cccccc;
+    border-style: solid;
+    font-size: 20px;
+    padding: 12px 6px;
+    border-width: 1px;
+    color: #333333;
+}
+
+.calculateButton {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #cccccc;
+    color: rgb(68, 68, 68);
+    text-align: center;
+    height: 38px;
+    width: 200px;
+    margin: 3px 40px;
+    font-size: 16px;
+    transition: background .25s;
+}
+
+.calculateButton:hover {
+    background-color: #18aff0;
+    color: white;
+}
+
+.frequencyInputLabel {
+    font-size: 16px;
+    text-align: center;
+    color: #333333;
+    font-style: normal;
+}
+.frequencyWrapper {
+    margin-left: 20px;
+}
+
+.frequencyInput:focus {
+    outline: none !important;
+}
+
+.calculateResult {
+    margin-top: 40px;
+    margin-left: 40px;
+    display: flex;
+    flex-direction: column;
+    width: 434px;
+}
+.calculateResult .row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 22px;
+    justify-content: space-between;
+}
+
+.calculateResult .row p {
+    margin: 0;
+    height: 100%;
+    vertical-align: bottom;
+}
+
+.calculateResult .row p:nth-child(1) {
+    font-size: 16px;
+    font-weight: normal;
+    color: #333333;
+    font-style: normal;
+    padding-top: 4px;
+}
+
+.calculateResult .row p:nth-child(2) {
+    font-size: 21px;
+    font-weight: bold;
+    color: #333333;
+    font-style: normal;
+    width: 40%;
+    text-align: start;
+}
+
+.calculateResult .line {
+    display: flex;
+    flex-direction: row;
+    width: 105%;
+    height: 2px;
+    margin: 10px 0 10px -20px;
+    border-bottom: 2px solid rgb(204, 204, 204);
+
+}
+
+.calculateButton:focus {
+    outline: none!important;
+}
+
+.s tr:hover {
+    cursor:pointer;
+}
+
+table#s tr:hover td {
+    background:#EDEDED;
+}
+
+.s tr:hover td {
+    background:#EDEDED;
+}
+
+.btn:hover {
+    background:#0082cf;
+}
+
+select {
+    padding: 4px;
+}
+
+#root {
+    width: 100%;
+    height: 100%;
+}
+
+
+.admin-table h4{
+
+}
+.admin-table .usc{
+    font-weight: bold;
+}
+
+#cancel:hover {
+    color: white !important;
+}
+
+#descriptionArrow {
+    margin: 10px;
+    font-weight: bold;
+    color: black;
+    font-size: 21px;
+    transition-duration: 200ms;
+}
+
+#descriptionLink {
+    font-size: 16px;
+    font-style: normal;
+    color: #009ce7;
+    cursor: pointer;
+}
+
+
+#descriptionLink:hover {
+    /*font-size: 18px;*/
+}
+
+.expanded {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+}
+
+.description {
+    display: flex;
+    flex-direction: row;
+    margin-top: -30px;
+    margin-bottom: 10px !important;
+}
+
+.description a {
+    padding: 15px 0;
+}
+
+.descriptionText {
+    background-color: white;
+    z-index: 100;
+    padding: 10px;
+    width: 600px;
+    overflow-y: scroll;
+    border-radius: 6px;
+    height: 0;
+    position: absolute;
+    transition: 1s;
+    top: 50px;
+    left: 100px;
+}
+
+.expandedDescriptionText {
+    height: 501px !important;
+}
+.no-visible {
+    display: none;
+}
+
+:root {
+    --scrollbarBg: rgba(0, 0, 0, 0.1);
+    --scrollbarThumb: rgba(255, 255, 255, 0.8);
+    --scrollbarWidth: 12px;
+    --scrollbarBorder: 3px solid var(--scrollbarBg);
+    --scrollbarBorderRadius: 0;
+}
+.descriptionText {
+    scrollbar-width: var(--scrollbarWidth);
+    scrollbar-color: var(--scrollbarThumb) var(--scrollbarBg);
+}
+.descriptionText::-webkit-scrollbar {
+    width: var(--scrollbarWidth);
+}
+.descriptionText::-webkit-scrollbar-track {
+    background: var(--scrollbarBg);
+    border-radius: var(--scrollbarBorderRadius);
+}
+.descriptionText::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbarThumb);
+    border-radius: 6px;
+    border: var(--scrollbarBorder);
+}
+
+/* this stuff below doesn't
+   affect scrollbar styling */
+body {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+.descriptionText {
+    overflow: auto;
+}
+
+#videoPlayerModal {
+    position: fixed;
+    z-index: 1000000;
+    top: 0;
+    left: 0;
+}
+
+#modalBg {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    position: absolute;
+}
+
+.noScroll::-webkit-scrollbar {
+    display: none;
+}
+
+#closeModal {
+    font-size: 40px;
+    color: rgba(77, 77, 77, 0.5);
+    top: 20px;
+    right: 40px;
+    position: absolute;
+    z-index: 10000000;
+    cursor: pointer;
+}
+
+#closeModal:hover {
+    color: rgba(200, 200, 200, 0.6);
+}
+
+#saveTelegram {
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #cccccc;
+    color: rgb(68, 68, 68);
+    text-align: center;
+    height: 38px;
+    width: 80px;
+    font-size: 12px;
+    transition: background .25s;
+    margin-left: 10px;
+}
+
+#saveTelegram:hover {
+    background-color: #18aff0;
+    color: white;
+}
+
+#saveTelegram:focus {
+    outline: none!important;
+}
