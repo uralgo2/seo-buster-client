@@ -46,7 +46,7 @@ function SignUp({setUser}: ISignUpProps) {
         const res: Union<IUser, ApiException> = await Api.SignUp({
             login: credentials.login,
             password: credentials.password,
-            telegram: credentials.telegram
+            telegram: credentials.telegram?.replace(/@/g, '')
         })
 
         if("error" in res && res.error){
@@ -85,7 +85,7 @@ function SignUp({setUser}: ISignUpProps) {
                             <div className="form-group">
                                 <label>Телеграм</label>
                                 <input placeholder='nik_name' name="telegram" type="text" className="form-control" onChange={onInputChange}/>
-                                <label style={{margin: 10}}>Для уведомлений и восстановления пароля</label>
+                                <label style={{margin: 10, color: '#33222269'}}>Для уведомлений и восстановления пароля</label>
                             </div>
 
                             <div className="form-group text-center">

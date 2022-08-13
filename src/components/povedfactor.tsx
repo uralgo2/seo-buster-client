@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from "react"
-import {IProject, Nullable, StatusEnum, TaskEnum} from "../utils.types";
+import {IProject, IUser, Nullable, StatusEnum, TaskEnum} from "../utils.types";
 import {Link, useNavigate} from "react-router-dom";
 import {Api} from "../api";
 
-function PovedFactor () {
+interface IPovedFactorProps {
+    user: IUser
+}
+function PovedFactor ({user}: IPovedFactorProps) {
     const [data, setData] = useState<IProject[]>([])
 
     const [modalLink, setModalLink] = useState<Nullable<string>>(null)
@@ -127,6 +130,9 @@ function PovedFactor () {
                         <i className="fa fa-plus"/>
                         {"    "}Добавить Сайт
                     </Link>
+                </div>
+                <div className="col-9 m-b-20">
+                    {user.balance <= 0 && <span>Для запуска задачи <Link to='/topup'>пополните баланс</Link></span>}
                 </div>
             </div>
             <div className="row">

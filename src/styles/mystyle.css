@@ -370,3 +370,45 @@ body {
 #saveTelegram:focus {
     outline: none!important;
 }
+
+footer {
+    height: 60px;
+    background-color: #012d46;
+    position: absolute;
+    bottom: 0;
+    width: 100vw;
+    z-index: 100000;
+}
+
+footer .wrap {
+    margin-top: 10px;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: row;
+    color: #9b9b9b;
+}
+
+footer .wrap a {
+    color: #9b9b9b;
+}
+
+footer .wrap a:hover {
+    color: white;
+}
+
+footer .wrap div {
+    display: flex;
+    flex-direction: column;
+}
+
+input[name='telegram']::placeholder {
+    color: #33222269!important;
+}
+/* input[type="number"]::-webkit-outer-spin-button, ::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+*/ todo

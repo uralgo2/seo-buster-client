@@ -1,5 +1,5 @@
 import React, {FormEvent, useEffect, useState} from 'react'
-import {ICity, Nullable} from "../utils.types";
+import {extractDomain, ICity, Nullable, validateURL} from "../utils.types";
 import {Api} from "../api";
 import {useNavigate} from "react-router-dom";
 
@@ -47,16 +47,17 @@ function PovedFactorAddProject(){
         if(!site)
             return setError('Не указан адрес сайта')
 
-        const uploadedFile = await Api.UploadFile(file)
+        if(!validateURL(site))
+            return setError('Неверный домен')
 
-        console.log(uploadedFile)
+        const uploadedFile = await Api.UploadFile(file)
 
         if('error' in uploadedFile)
             return setError(uploadedFile.message)
 
         const result = await Api.CreateProject(file.name, uploadedFile.uploadPath, {
             city: city,
-            site: site,
+            site: extractDomain(site),
             factor: Number(factor)
         })
 

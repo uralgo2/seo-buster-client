@@ -19,6 +19,8 @@ import RestorePassword from "./components/restore.password"
 import PovedFactorAddProject from "./components/povedfactor.add.project"
 import PFView from "./components/pf.view"
 import {Api} from "./api";
+import Footer from "./components/footer"
+import Policy from './components/policy'
 
 function App() {
     const [user, setUser] = useState<Nullable<IUser>>(null)
@@ -36,7 +38,6 @@ function App() {
         sclick: 0
 
     })
-    // todo make saving defaults at backend
     const fetchUser = async () => {
         const me = await Api.GetMe()
 
@@ -48,8 +49,16 @@ function App() {
         setLoaded(true)
     }
 
+    const fetchDefaults = async () => {
+        const defaults = await Api.GetDefaults()
+
+        if(!('error' in defaults))
+            setDefaults(defaults)
+    }
+
     useEffect(() => {
         fetchUser()
+        fetchDefaults()
     }, [])
 
     useEffect(() => {
@@ -63,11 +72,14 @@ function App() {
     return (
         <Router>
             {(user && loaded) ?
-                <div className="App">
+                <div className="App" style={{
+                    minHeight: '100vh',
+                    position: "relative"
+                }}>
                     <Header user={user}/>
                     <Sidebar user={user}/>
 
-                    <div className="page-wrapper">
+                    <div className="page-wrapper" style={{paddingBottom: 60}}>
                         <div className="content">
                             {loaded &&
                                 <Routes>
@@ -79,7 +91,7 @@ function App() {
 
                                     <Route path="/pf" element={
                                         user?.role !== UserRoleEnum.Admin
-                                            ? <PovedFactor/>
+                                            ? <PovedFactor user={user!}/>
                                             : <PovedFactorAdmin/>
                                     }/>
 
@@ -121,17 +133,26 @@ function App() {
                                            }
                                     />
                                     <Route path="*" element={<Navigate to="pf" replace/>}/>
+                                    <Route path='policy' element={<Policy/>}/>
                                 </Routes>
                             }
                         </div>
                     </div>
+
+
+                    <Footer/>
                 </div>
-                : (!user && loaded) && <Routes>
+                : (!user && loaded) && <>
+                <Routes>
                     <Route path="/login" element={<Login setUser={setUser}/>}/>
                     <Route path="/signup" element={<SignUp setUser={setUser}/>}/>
                     <Route path="/restore" element={<RestorePassword/>}/>
                     <Route path="*" element={<Navigate to='login' replace/>}/>
+                    <Route path='policy' element={<Policy/>}/>
                 </Routes>
+
+                <Footer/>
+            </>
             }
         </Router>
     );

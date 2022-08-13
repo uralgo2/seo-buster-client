@@ -1,23 +1,33 @@
 import React, {ChangeEvent, FormEvent, useState} from "react"
 import {ILoginCredentials, IUser, Nullable} from "../utils.types";
 import {Link} from "react-router-dom";
+import {Api} from "../api";
 
 function RestorePassword(){
     const [telegramLogin, setTelegramLogin] = useState<string>('')
 
     const [error, setError] = useState<Nullable<string>>(null)
-
+    const [successful, setSuccessful] = useState<Nullable<string>>(null)
     const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
 
         setTelegramLogin(value)
     }
 
-    const onSubmitLogin = (e: FormEvent<HTMLFormElement>) => {
+    const onSubmitLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         if(telegramLogin !== ''){
-            // todo
+            const res = await Api.RestoreTelegram(telegramLogin.replace(/@/g, ''))
+
+            if('error' in res) {
+                setError(res.message)
+                setSuccessful(null)
+            }
+            else {
+                setError(null)
+                setSuccessful('Сообщение отправленно. Проверьте свой телеграм.')
+            }
         }
     }
 
@@ -29,7 +39,7 @@ function RestorePassword(){
                         <form className="form-signin" onSubmit={onSubmitLogin}>
                             <div className="account-logo">
                                 <h2>SEO Бустер</h2>
-                                <p style={{color:"red"}}>{error ?? ''}</p>
+                                <p style={{color: successful ? 'green' : "red" }}>{successful ?? error ?? ''}</p>
                             </div>
 
                             <div className="form-group">

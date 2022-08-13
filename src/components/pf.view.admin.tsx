@@ -5,6 +5,7 @@ import {Api} from "../api";
 
 function PFViewAdmin ({update} : IUpdateProps){
     const [project, setProject] = useState<Nullable<IProject>>(null)
+    const [oldProject, setOldProject] = useState<Nullable<IProject>>(null)
     const [deduct, setDeduct] = useState<Nullable<number>>(null)
     const [task, setTask] = useState<Nullable<ITask>>(null)
     const navigate = useNavigate()
@@ -20,33 +21,30 @@ function PFViewAdmin ({update} : IUpdateProps){
         setProject(newProject as IProject)
     }
 
-    const onTaskInputChange = (e: ChangeEvent<HTMLInputElement & HTMLTextAreaElement>) => {
-        const name = e.target.name
+    const onTaskInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const value = e.target.value
 
-        const newProject = structuredClone(project)
+        const newTask = structuredClone(task)
 
-        newProject.lastTask[name] = value
+        newTask.message = value
 
-        setTask(newProject.lastTask)
-        setProject(newProject as IProject)
+        setTask(newTask)
     }
 
     const onStatusChange = (e: ChangeEvent<HTMLSelectElement>) => {
         const newTask = structuredClone(task)
-        const newProject = structuredClone(project)
 
         newTask.status = e.target.selectedOptions.item(0)!.value
-        newProject.lastTask = newTask
-        setTask(newTask as ITask)
 
-        setProject(newProject)
+        setTask(newTask)
     }
 
     const OnDeductInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
 
-        setDeduct(Number(value))
+        const num = Number(value)
+
+        setDeduct(Number.isNaN(num) ? null : num)
     }
 
     const onFactorChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -58,20 +56,53 @@ function PFViewAdmin ({update} : IUpdateProps){
     }
 
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        console.log(project)
-        console.log(deduct)
+        e.preventDefault()
+
+        const safe: Partial<IProject> = structuredClone(project)
+
+        delete safe.user
+        delete safe.lastTask
+        delete safe.lastTaskCreationDate
+        delete safe._id
+        delete safe.notificatedAboutExpires
+        delete safe.notificatedAboutExpired
+
+        const resProjectUpdate = await Api.PutProject(project!._id, safe)
+
+        if('error' in resProjectUpdate)
+            return alert(resProjectUpdate.message)
+
+        const resTaskUpdate = await Api.PutTask(project!._id, task!._id, {
+            status: task?.status,
+            message: task?.message
+        })
+
+        if('error' in resTaskUpdate)
+            return alert(resTaskUpdate.message)
+
+        if(deduct) {
+            const resDeduct = await Api.DeductFromUserBalance(project!.user._id, deduct)
+
+            if('error' in resDeduct)
+                return alert(resDeduct.message)
+        }
+
+        navigate('../../pf')
     }
 
     const params = useParams()
 
     const fetchProject = async () => {
-        const project = await Api.GetProjectById(params.id as string)
+        const res = await Api.GetTaskAndProjectById(params.id!)
 
-        if('error' in project)
-            return navigate('pf')
+        if('error' in res)
+            return navigate('../../pf')
 
-        setTask(project.lastTask)
+        const {task, project} = res
+
+        setTask(task)
         setProject(project)
+        setOldProject(project)
     }
 
     useEffect(() => {
@@ -96,16 +127,16 @@ function PFViewAdmin ({update} : IUpdateProps){
                                 </tr>
                                 <tr>
                                     <td><b>Задача</b></td>
-                                    <td>{project?.lastTask?.type === TaskEnum.ChangeFactor
-                                        ? (TaskEnum.ChangeFactor + ' на ' + formatNumber(project.lastTask.factorToChange!, 1, 1))
-                                        : (project?.lastTask?.type ?? '')}</td>
+                                    <td>{task?.type === TaskEnum.ChangeFactor
+                                        ? (TaskEnum.ChangeFactor + ' на ' + formatNumber(task.factorToChange!, 1, 1))
+                                        : (task?.type ?? '')}</td>
 
                                 </tr>
                                 <tr>
                                     <td><b>Файл</b></td>
                                     <td>
-                                        <a href={`http://seobuster.ru/${project?.lastTask?.filePath}`} download="">
-                                            {project?.lastTask?.fileName??''}
+                                        <a href={`http://seobuster.ru/${task?.filePath}`} download="">
+                                            {task?.fileName??''}
                                         </a>
                                     </td>
 
@@ -119,17 +150,19 @@ function PFViewAdmin ({update} : IUpdateProps){
                                     <td>
                                         <select
                                             onChange={onFactorChange}
-                                            name="factor">
-                                            <option selected={project?.factor === 0.1} value="0.1">0,1</option>
-                                            <option selected={project?.factor === 0.2} value="0.2">0,2</option>
-                                            <option selected={project?.factor === 0.3} value="0.3">0,3</option>
-                                            <option selected={project?.factor === 0.4} value="0.4">0,4</option>
-                                            <option selected={project?.factor === 0.5} value="0.5">0,5</option>
-                                            <option selected={project?.factor === 0.6} value="0.6">0,6</option>
-                                            <option selected={project?.factor === 0.7} value="0.7">0,7</option>
-                                            <option selected={project?.factor === 0.8} value="0.8">0,8</option>
-                                            <option selected={project?.factor === 0.9} value="0.9">0,9</option>
-                                            <option selected={project?.factor === 1} value="1">1</option>
+                                            name="factor"
+                                            value={project?.factor}
+                                        >
+                                            <option value="0.1">0,1</option>
+                                            <option value="0.2">0,2</option>
+                                            <option value="0.3">0,3</option>
+                                            <option value="0.4">0,4</option>
+                                            <option value="0.5">0,5</option>
+                                            <option value="0.6">0,6</option>
+                                            <option value="0.7">0,7</option>
+                                            <option value="0.8">0,8</option>
+                                            <option value="0.9">0,9</option>
+                                            <option value="1">1</option>
                                         </select>
                                     </td>
 
@@ -140,11 +173,12 @@ function PFViewAdmin ({update} : IUpdateProps){
                                     <td><b>Статус</b></td>
                                     <td>
                                         <select name="status" id="kof"
-                                            onChange={onStatusChange}
+                                                onChange={onStatusChange}
+                                                value={task?.status}
                                         >
-                                            <option selected={project?.lastTask?.status === StatusEnum.Execute}  value={StatusEnum.Execute}>Выполнить</option>
-                                            <option selected={project?.lastTask?.status === StatusEnum.Done} value={StatusEnum.Done}>Готово</option>
-                                            <option selected={project?.lastTask?.status === StatusEnum.Error} value={StatusEnum.Error}>Ошибка</option>
+                                            <option value={StatusEnum.Execute}>Выполнить</option>
+                                            <option value={StatusEnum.Done}>Готово</option>
+                                            <option value={StatusEnum.Error}>Ошибка</option>
                                         </select>
                                         <div className="textt"/>
                                     </td>
@@ -161,7 +195,7 @@ function PFViewAdmin ({update} : IUpdateProps){
                                                    float: 'left',
                                                    width: 70
                                                }}
-                                               value={project?.pages ?? 0}/>
+                                               value={oldProject?.pages ?? 0}/>
                                         <input id="page" name="pages"
                                                type="number"
                                                className="form-control"
@@ -182,7 +216,7 @@ function PFViewAdmin ({update} : IUpdateProps){
                                                    float:'left',
                                                    width: 70
                                                }}
-                                               value={project?.queries ?? 0}/>
+                                               value={oldProject?.queries ?? 0}/>
                                         <input id="zapros" name="queries"
                                                type="number"
                                                className="form-control"
@@ -203,7 +237,7 @@ function PFViewAdmin ({update} : IUpdateProps){
                                                    float: 'left',
                                                    width: 70
                                                }}
-                                               value={project?.clicksPerDay ?? 0}/>
+                                               value={oldProject?.clicksPerDay ?? 0}/>
                                         <input id="page" name="clicksPerDay"
                                                type="number"
                                                className="form-control"
@@ -224,7 +258,7 @@ function PFViewAdmin ({update} : IUpdateProps){
                                                    float: 'left',
                                                    width: 70
                                                }}
-                                               value={project?.expensePerDay ?? 0}/>
+                                               value={oldProject?.expensePerDay ?? 0}/>
                                         <input id="page" name="expensePerDay"
                                                type="number"
                                                className="form-control"
@@ -245,7 +279,7 @@ function PFViewAdmin ({update} : IUpdateProps){
                                                    float: 'left',
                                                    width: 70
                                                }}
-                                               value={project?.tariff ?? 0}/>
+                                               value={oldProject?.tariff ?? 0}/>
                                         <input id="page" name="tariff"
                                                type="number"
                                                className="form-control"
@@ -262,7 +296,7 @@ function PFViewAdmin ({update} : IUpdateProps){
                                         <input type="number" disabled
                                                className="form-control"
                                                style={{marginRight:10, float:'left',width: 70}}
-                                               value={project?.expensePerMonth ?? 0}/>
+                                               value={oldProject?.expensePerMonth ?? 0}/>
                                         <input id="expensePerDay" name="expensePerMonth" type="number"
                                                className="form-control"
                                                style={{width: 70}}
@@ -294,7 +328,7 @@ function PFViewAdmin ({update} : IUpdateProps){
                                                type="number"
                                                className="form-control"
                                                style={{width: 70}}
-                                               value={project?.user.balance ?? 0}
+                                               value={deduct ?? ''}
                                                onChange={OnDeductInputChange}
                                         />
                                     </td>
@@ -304,10 +338,11 @@ function PFViewAdmin ({update} : IUpdateProps){
                                     <td className="col">
                                         <textarea
                                             onChange={onTaskInputChange}
-                                            disabled={project?.lastTask?.status !== StatusEnum.Error}
-                                            name="message" rows={3} cols={30} id="req">
-                                            {project?.lastTask?.message}
-                                        </textarea>
+                                            disabled={task?.status !== StatusEnum.Error}
+                                            name="message" rows={3} cols={30} id="req"
+                                            value={task?.message ?? ''}
+                                            defaultValue=''
+                                        />
                                     </td>
                                 </tr>
                                 </tbody>
@@ -315,7 +350,7 @@ function PFViewAdmin ({update} : IUpdateProps){
                             <br/>
 
                             <div className="text-right">
-                                <a onClick={() => navigate('project')}
+                                <a onClick={() => navigate('../../pf')}
                                    className="btn btn-outline-primary take-btn"
                                    id="cancel"
                                    style={{margin: 10}}>

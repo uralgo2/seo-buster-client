@@ -80,7 +80,7 @@ function Users () {
                     </div>
                     <div className="form-group">
                         <label>Телеграм</label>
-                        <input onChange={onInputChange} name="telegramLogin" type="text" className="form-control"/>
+                        <input onChange={onInputChange} name="telegram" type="text" className="form-control"/>
                     </div>
                     <input type="hidden" name="add" value="user"/>
                     <div className="text-right">

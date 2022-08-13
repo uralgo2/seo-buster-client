@@ -15,7 +15,7 @@ import {
 } from "./utils.types";
 
 export class Api {
-    private static readonly host: string = 'http://seobuster.ru/'
+    private static readonly host: string = 'https://seobuster.ru/'
 
     private static async request<ReturnType>(
         path: string,
@@ -40,6 +40,7 @@ export class Api {
 
         const body = JSON.stringify(bodyParams) === '{}' ? undefined : JSON.stringify(bodyParams)
 
+
         const result = await fetch(new URL(pathString + query, url).toString(), {
             method: method,
             headers: {
@@ -47,10 +48,11 @@ export class Api {
             },
             credentials: 'include',
             body: body,
-            mode: "cors"
         })
 
         const text = await result.text()
+
+        //console.log(text)
 
         const json = JSON.parse(text)
 
@@ -71,16 +73,6 @@ export class Api {
 
     public static async GetMyProjects(): Promise<Union<IProject[], ApiException>> {
         return await Api.request<IProject[]>('/api/projects/my')
-    }
-
-    public static async GetProjects(): Promise<Union<IPagination<IProject>, ApiException>> {
-        return await Api.request<IPagination<IProject>>('/api/projects')
-    }
-
-    public static async GetProjectsPagination(page = 0): Promise<Union<IPagination<IProject>, ApiException>> {
-        return await Api.request<IPagination<IProject>>('/api/projects', HttpMethod.Get, {
-            page: page
-        })
     }
 
     public static async Logout(): Promise<Union<{}, ApiException>> {
@@ -181,7 +173,7 @@ export class Api {
     }
 
     public static async AddTask(projectId: string, task: Partial<ITask>): Promise<Union<IProject, ApiException>> {
-        return await Api.request<IProject>('/api/projects/:id/tasks', HttpMethod.Patch, {}, {
+        return await Api.request<IProject>('/api/projects/:id/tasks', HttpMethod.Post, {}, {
             task: task
         }, {
             id: projectId
@@ -195,6 +187,49 @@ export class Api {
     public static async SaveDefaults(defaults: IDefaults): Promise<Union<IDefaults, ApiException>> {
         return await Api.request<IDefaults>('/api/defaults', HttpMethod.Put, {}, {
             defaults: defaults
+        })
+    }
+
+    public static async GetTasksPagination(page: number): Promise<Union<IPagination, ApiException>> {
+        return await Api.request<IPagination>('/api/tasks', HttpMethod.Get,{
+            page: page
+        })
+    }
+
+    public static async GetTaskAndProjectById(id: string): Promise<Union<{ task: ITask, project: IProject }, ApiException>> {
+        return await Api.request<{task: ITask, project: IProject}>('/api/tasks/:id', HttpMethod.Get, {}, {}, {
+            id: id
+        })
+    }
+
+    public static async DeductFromUserBalance(userId: string, sum: number){
+        return await Api.request<{}>('/api/users/:id/deduct', HttpMethod.Get, {
+            sum: sum
+        }, {}, {
+            id: userId
+        })
+    }
+
+    public static async PutProject(projectId: string, data: Partial<IProject>){
+        return await Api.request<IProject>('/api/projects/:id', HttpMethod.Put, {}, {
+            project: data
+        }, {
+            id: projectId
+        })
+    }
+
+    public static async PutTask(projectId: string, taskId: string, data: Partial<ITask>){
+        return await Api.request<ITask>('/api/projects/:projectId/tasks/:taskId', HttpMethod.Put, {}, {
+            task: data
+        }, {
+            projectId: projectId,
+            taskId: taskId
+        })
+    }
+
+    public static async RestoreTelegram(telegram: string){
+        return await Api.request<{}>('/api/users/:telegram/restore', HttpMethod.Get, {}, {}, {
+            telegram: telegram
         })
     }
 }

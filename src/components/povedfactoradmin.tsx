@@ -1,32 +1,32 @@
 import React, {useEffect, useState} from "react";
-import {formatNumber, IPagination, IProject} from "../utils.types";
+import {formatNumber, IPagination, IProject, ITask, TaskEnum} from "../utils.types";
 import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import {Api} from "../api";
 
 function PovedFactorAdmin() {
-    const [data, setData] = useState<IPagination<IProject>>({
+    const [data, setData] = useState<IPagination>({
         count: 0,
-        data: []
+        tasks: [],
+        projects: []
     })
 
     const [searchParams] = useSearchParams()
 
-    const page = Number(searchParams.get('page') || 1)
+    const page = Number(searchParams.get('page') || 0)
 
     const navigate = useNavigate()
 
-    const fetchProjects = async () => {
-        const projects = await Api.GetProjectsPagination()
+    const fetchData = async () => {
+        const data = await Api.GetTasksPagination(page)
 
-        if(!("error" in projects)) {
-            console.log(projects)
-            setData(projects)
+        if(!("error" in data)) {
+            setData(data)
         }
     }
 
     useEffect(() => {
-        fetchProjects()
-    }, [])
+        fetchData()
+    }, [page])
 
     return (
         <>
@@ -57,51 +57,54 @@ function PovedFactorAdmin() {
                             </tr>
                             </thead>
                             <tbody>
-                            {data?.data.slice(page * 10 - 10, page * 10).map((project =>
-
-                                    <tr className="s" key={project._id}
-                                        onClick={
-                                            () => navigate(`/pf/${project._id}/view`, {
-                                                replace: true
-                                            })
-                                        }>
-                                        <td style={{paddingLeft: 10}}>
-                                            {
-                                                new Date(project.createdAt)!.toLocaleString('ru-RU',
-                                                    {
-                                                        hour: '2-digit',
-                                                        minute: '2-digit',
-                                                        day: '2-digit',
-                                                        month: 'short'
-                                                    })
-                                                    .split(',')
-                                                    .reverse()
-                                                    .join(' ')
-                                            }
-                                        </td>
-                                        <td>{project.site}</td>
-                                        <td style={{paddingLeft: 10}}>{project.city}</td>
-                                        <td style={{paddingLeft: 10}}>{project.pages}</td>
-                                        <td style={{paddingLeft: 10}}>{project.user.login}</td>
-                                        <td style={{paddingLeft: 10}}>{project.queries}</td>
-                                        <td style={{paddingLeft: 10}}>{project.clicksPerDay}</td>
-                                        <td style={{paddingLeft: 10}}>{formatNumber(project.expensePerDay, 0)}</td>
-                                        <td style={{paddingLeft: 10}}>{formatNumber(project.tariff)}</td>
-                                        <td style={{paddingLeft: 10}}>{project.expensePerMonth}</td>
-                                        <td>{project.lastTask!.type}</td>
-                                        <td>{new Date(project.endingAt).toLocaleDateString('ru-RU', {
-                                            year: 'numeric',
-                                            month: '2-digit',
-                                            day: '2-digit',
-
+                            {data?.tasks.map(task => {
+                                const project = data.projects[task.projectId] as IProject
+                                return <tr key={task._id} className="s"
+                                    onClick={
+                                        () => navigate(`/pf/${task._id}/view`, {
+                                            replace: true
                                         })
-                                            .split('.')
-                                            .reverse()
-                                            .join('-')
-                                        }</td>
-                                        <td>{project.lastTask!.status}</td>
-                                    </tr>
-                            ))}
+                                    }>
+                                    <td style={{paddingLeft: 10}}>
+                                        {
+                                            new Date(project.createdAt)!.toLocaleString('ru-RU',
+                                                {
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                    day: '2-digit',
+                                                    month: 'short'
+                                                })
+                                                .split(',')
+                                                .reverse()
+                                                .join(' ')
+                                        }
+                                    </td>
+                                    <td>{project.site}</td>
+                                    <td style={{paddingLeft: 10}}>{project.city}</td>
+                                    <td style={{paddingLeft: 10}}>{project.pages}</td>
+                                    <td style={{paddingLeft: 10}}>{project.user.login}</td>
+                                    <td style={{paddingLeft: 10}}>{project.queries}</td>
+                                    <td style={{paddingLeft: 10}}>{project.clicksPerDay}</td>
+                                    <td style={{paddingLeft: 10}}>{formatNumber(project.expensePerDay, 0)}</td>
+                                    <td style={{paddingLeft: 10}}>{formatNumber(project.tariff)}</td>
+                                    <td style={{paddingLeft: 10}}>{project.expensePerMonth}</td>
+                                    <td>{task?.type === TaskEnum.ChangeFactor
+                                        ? (TaskEnum.ChangeFactor + ' на ' + formatNumber(task.factorToChange!, 1, 1))
+                                        : (task?.type ?? '')}</td>
+                                    <td>{new Date(project.endingAt).toLocaleDateString('ru-RU', {
+                                        year: 'numeric',
+                                        month: '2-digit',
+                                        day: '2-digit',
+
+                                    })
+                                        .split('.')
+                                        .reverse()
+                                        .join('-')
+                                    }</td>
+                                    <td>{task.status}</td>
+                                </tr>
+                            }
+                            )}
                             </tbody>
                         </table>
 
@@ -111,7 +114,7 @@ function PovedFactorAdmin() {
             <div>
                 {   (data?.count ?? 0) > 10 &&
                     Array.from({length: Math.ceil(data!.count/10)},
-                        (_, i) => <Link key={i} to={`?page=${i+1}`}>{' '}{i+1}{' '}</Link>
+                        (_, i) => <Link key={i} to={`?page=${i}`}>{' '}{i+1}{' '}</Link>
                     )
                 }
             </div>

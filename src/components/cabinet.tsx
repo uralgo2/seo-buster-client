@@ -19,12 +19,15 @@ function Cabinet({user, setUser}: ICabinetProps){
 
     const onButtonSaveClick = async () => {
         if(telegram){
-            const user = await Api.PatchMeTelegram(telegram)
+            const user = await Api.PatchMeTelegram(telegram.replace(/@/g, ''))
 
-            if(!("error" in user))
+            if(!("error" in user)) {
                 setUser(user)
-            else
+            }
+            else {
                 setError(user.message)
+                setTelegram(null)
+            }
         }
     }
 
@@ -61,9 +64,8 @@ function Cabinet({user, setUser}: ICabinetProps){
                                         style={{backgroundColor: 'white'}}
                                         type='text'
                                         onChange={onInputChangeTelegram}
-                                        onClick={onButtonSaveClick}
                                         value={telegram ?? ''}/>
-                                    <button id='saveTelegram'>Сохранить</button>
+                                    <button onClick={onButtonSaveClick} id='saveTelegram'>Сохранить</button>
                                 </div>
                             </td>
                         </tr>

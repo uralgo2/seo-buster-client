@@ -129,7 +129,6 @@ function Calculator({_defaults, _setDefaults}: ICalculatorProps) {
             const proxies = Math.round(clicksPerDay / defaults.proxies)
             const price = Math.round(proxies * defaults.price)
 
-            console.log(sumOfFrequency)
             const myClickPerDay = Math.ceil(sumOfFrequency / 30 * 0.5)
 
             const tariff = clicksPerDay < 75 ? 0.110
@@ -141,7 +140,7 @@ function Calculator({_defaults, _setDefaults}: ICalculatorProps) {
                                     : 0.055
 
             const pricePerDay = tariff * myClickPerDay
-
+            const pricePerMonth = pricePerDay * 30
 
             setCalculatedResult({
                 accounts: accounts,
@@ -153,7 +152,8 @@ function Calculator({_defaults, _setDefaults}: ICalculatorProps) {
                 uniquePagesCount: uniquePages.size,
                 price: price,
                 tariff: tariff,
-                pricePerDay: pricePerDay
+                pricePerDay: pricePerDay,
+                pricePerMonth: pricePerMonth,
             })
         };
 
@@ -191,7 +191,7 @@ function Calculator({_defaults, _setDefaults}: ICalculatorProps) {
                         <label>x Аккаунтов </label>
                     </div>
                     <div className="form-group">
-                        <input name="proxy" type="number" className="form-control" value={defaults.proxies} onChange={onFormInputChange}/>
+                        <input name="proxies" type="number" className="form-control" value={defaults.proxies} onChange={onFormInputChange}/>
                         <label>Прокси </label>
                     </div>
                     <div className="form-group">
@@ -243,6 +243,7 @@ function Calculator({_defaults, _setDefaults}: ICalculatorProps) {
                 <div className="col-md-12 admin-table">
                     <h4>Кликов\день: <span className="usc"> {calculatedResult.clicksPerDay} </span></h4>
                     <h4>Стоимость\день: <span className="usc"> {formatNumber(calculatedResult.pricePerDay, 0)} </span></h4>
+                    <h4>Стоимость\месяц: <span className="usc"> {formatNumber(calculatedResult.pricePerMonth, 0)} </span></h4>
                     <h4>Тариф: <span className="usc"> {formatNumber(calculatedResult.tariff)} </span></h4>
                     <h4>Аккаунтов: <span className="usc"> {calculatedResult.accounts} </span></h4>
                     <h4>Прокси: <span className="usc"> {calculatedResult.proxies} </span></h4>
